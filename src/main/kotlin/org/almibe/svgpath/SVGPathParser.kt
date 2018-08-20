@@ -56,16 +56,31 @@ class SVGPathParser {
         return commands
     }
 
-    private fun readCommand(currentChar: Char, itr: CharIterator): SVGCommand {
-        val commandChar = currentChar
+    private fun readCommand(commandChar: Char, itr: CharIterator): SVGCommand {
+        val numberOfArgs = commandChars[commandChar]!!
+        val args = mutableListOf<Double>()
+        for (i in 1..numberOfArgs) {
+            args.add(readNumber(itr, null))
+        }
+        return createCommand(commandChar, args)
+    }
+
+    private fun readRepeatedCommand(commandChar: Char, currentChar: Char, itr: CharIterator): SVGCommand {
+        val numberOfArgs = commandChars[commandChar]!!
+        val args = mutableListOf<Double>()
+        val firstArg = readNumber(itr, currentChar)
+        args.add(firstArg)
+        for (i in 2..numberOfArgs) {
+            args.add(readNumber(itr, null))
+        }
+        return createCommand(commandChar, args)
+    }
+
+    private fun readNumber(itr: CharIterator, firstChar: Char?): Double {
         TODO()
     }
 
-    private fun readRepeatedCommand(command: Char, currentChar: Char, itr: CharIterator): SVGCommand {
-        TODO()
-    }
-
-    private fun readNumber(itr: CharIterator): Double {
+    private fun createCommand(commandChar: Char, args: List<Double>): SVGCommand {
         TODO()
     }
 }
