@@ -1,2 +1,2 @@
 # path-sketch
-An experimental project for drawing svg path-line commands in Swing.
+An experimental project for working with svg path-line commands on the JVM.
