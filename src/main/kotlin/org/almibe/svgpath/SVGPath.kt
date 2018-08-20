@@ -34,14 +34,24 @@ class SVGPath(val commands: List<SVGCommand>) {
             it.scale(scaleBy)
         }.toList())
     }
+
+    fun toPathString(): String {
+        val sb = StringBuilder()
+        this.commands.forEach {
+            sb.append(it.toPathString() + " ")
+        }
+        return sb.toString().trim()
+    }
 }
 
 interface SVGCommand {
     fun startPos(): Pair<Double, Double>
     fun scale(scaleBy: Double): SVGCommand
+    fun toPathString(): String
 }
 
 data class Move(val x: Double, val y: Double): SVGCommand {
+    override fun toPathString(): String = "M $x $y"
     override fun scale(scaleBy: Double): SVGCommand = Move(x * scaleBy, y * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -50,6 +60,7 @@ data class Move(val x: Double, val y: Double): SVGCommand {
 }
 
 data class RelativeMove(val x: Double, val y: Double): SVGCommand {
+    override fun toPathString(): String = "m $x $y"
     override fun scale(scaleBy: Double): SVGCommand = RelativeMove(x * scaleBy, y * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -58,6 +69,7 @@ data class RelativeMove(val x: Double, val y: Double): SVGCommand {
 }
 
 data class Line(val x: Double, val y: Double): SVGCommand {
+    override fun toPathString(): String = "L $x $y"
     override fun scale(scaleBy: Double): SVGCommand = Line(x * scaleBy, y * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -66,6 +78,7 @@ data class Line(val x: Double, val y: Double): SVGCommand {
 }
 
 data class RelativeLine(val x: Double, val y: Double): SVGCommand {
+    override fun toPathString(): String = "l $x $y"
     override fun scale(scaleBy: Double): SVGCommand = RelativeLine(x * scaleBy, y * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -74,6 +87,7 @@ data class RelativeLine(val x: Double, val y: Double): SVGCommand {
 }
 
 data class HorizontalLine(val x: Double): SVGCommand {
+    override fun toPathString(): String = "H $x"
     override fun scale(scaleBy: Double): SVGCommand = HorizontalLine(x * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -82,6 +96,7 @@ data class HorizontalLine(val x: Double): SVGCommand {
 }
 
 data class RelativeHorizontalLine(val x: Double): SVGCommand {
+    override fun toPathString(): String = "h $x"
     override fun scale(scaleBy: Double): SVGCommand = RelativeHorizontalLine(x * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -90,6 +105,7 @@ data class RelativeHorizontalLine(val x: Double): SVGCommand {
 }
 
 data class VerticleLine(val y: Double): SVGCommand {
+    override fun toPathString(): String = "V $y"
     override fun scale(scaleBy: Double): SVGCommand = VerticleLine(y * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -98,6 +114,7 @@ data class VerticleLine(val y: Double): SVGCommand {
 }
 
 data class RelativeVerticleLine(val y: Double): SVGCommand {
+    override fun toPathString(): String = "v $y"
     override fun scale(scaleBy: Double): SVGCommand = RelativeVerticleLine(y * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -106,6 +123,7 @@ data class RelativeVerticleLine(val y: Double): SVGCommand {
 }
 
 class ClosePath: SVGCommand {
+    override fun toPathString(): String = "z"
     override fun scale(scaleBy: Double): SVGCommand = ClosePath()
 
     override fun startPos(): Pair<Double, Double> {
@@ -114,6 +132,7 @@ class ClosePath: SVGCommand {
 }
 
 data class CubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double, val x2: Double, val y2: Double): SVGCommand {
+    override fun toPathString(): String = "C $x0 $y0 $x1 $y1 $x2 $y2"
     override fun scale(scaleBy: Double): SVGCommand = CubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy, x2 * scaleBy, y2 *scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -122,6 +141,7 @@ data class CubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val 
 }
 
 data class RelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double, val x2: Double, val y2: Double): SVGCommand {
+    override fun toPathString(): String = "c $x0 $y0 $x1 $y1 $x2 $y2"
     override fun scale(scaleBy: Double): SVGCommand = RelativeCubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy, x2 * scaleBy, y2 *scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -130,6 +150,7 @@ data class RelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1: Doub
 }
 
 data class SmoothCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+    override fun toPathString(): String = "S $x0 $y0 $x1 $y1"
     override fun scale(scaleBy: Double): SVGCommand = SmoothCubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -138,6 +159,7 @@ data class SmoothCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double
 }
 
 data class SmoothRelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+    override fun toPathString(): String = "s $x0 $y0 $x1 $y1"
     override fun scale(scaleBy: Double): SVGCommand = SmoothRelativeCubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -146,6 +168,7 @@ data class SmoothRelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1
 }
 
 data class QuadraticeBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+    override fun toPathString(): String = "Q $x0 $y0 $x1 $y1"
     override fun scale(scaleBy: Double): SVGCommand = QuadraticeBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -154,6 +177,7 @@ data class QuadraticeBezierCurve(val x0: Double, val y0: Double, val x1: Double,
 }
 
 data class RelativeQuadraticeBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+    override fun toPathString(): String = "q $x0 $y0 $x1 $y1"
     override fun scale(scaleBy: Double): SVGCommand = RelativeQuadraticeBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -162,6 +186,7 @@ data class RelativeQuadraticeBezierCurve(val x0: Double, val y0: Double, val x1:
 }
 
 data class SmoothQuadraticeBezierCurve(val x: Double, val y: Double): SVGCommand {
+    override fun toPathString(): String = "T $x $y"
     override fun scale(scaleBy: Double): SVGCommand = SmoothQuadraticeBezierCurve(x * scaleBy, y * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -170,6 +195,7 @@ data class SmoothQuadraticeBezierCurve(val x: Double, val y: Double): SVGCommand
 }
 
 data class SmoothRelativeQuadraticeBezierCurve(val x: Double, val y: Double): SVGCommand {
+    override fun toPathString(): String = "t $x $y"
     override fun scale(scaleBy: Double): SVGCommand = SmoothRelativeQuadraticeBezierCurve(x * scaleBy, y * scaleBy)
 
     override fun startPos(): Pair<Double, Double> {
@@ -179,6 +205,7 @@ data class SmoothRelativeQuadraticeBezierCurve(val x: Double, val y: Double): SV
 
 data class Arc(val rx: Double, val ry: Double, val xRotation: Double, val largeArcFlag: Double,
                val sweepFlag: Double, val x: Double, val y: Double): SVGCommand {
+    override fun toPathString(): String = TODO()
     override fun scale(scaleBy: Double): SVGCommand = TODO()
 
     override fun startPos(): Pair<Double, Double> {
@@ -188,6 +215,7 @@ data class Arc(val rx: Double, val ry: Double, val xRotation: Double, val largeA
 
 data class RelativeArc(val rx: Double, val ry: Double, val xRotation: Double, val largeArcFlag: Double,
                        val sweepFlag: Double, val x: Double, val y: Double): SVGCommand {
+    override fun toPathString(): String = TODO()
     override fun scale(scaleBy: Double): SVGCommand = TODO()
 
     override fun startPos(): Pair<Double, Double> {
