@@ -4,9 +4,6 @@
 
 package org.almibe.svgpath
 
-class SvgPath {
-}
-
 interface SVGCommand
 
 data class Move(val x: Double, val y: Double): SVGCommand
