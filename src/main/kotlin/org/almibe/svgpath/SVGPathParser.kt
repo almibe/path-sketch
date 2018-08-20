@@ -86,6 +86,11 @@ class SVGPathParser {
             val next = itr.next()
             when (next) {
                 in doubleChars -> sb.append(next)
+                in ignoreChars -> {
+                    if (sb.isNotEmpty()) {
+                        break@readNumbers
+                    }
+                }
                 else -> break@readNumbers
             }
         }
