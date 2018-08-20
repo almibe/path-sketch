@@ -29,110 +29,149 @@ class SVGPath(val commands: List<SVGCommand>) {
         return x to y
     }
 
-
+    fun scale(scaleBy: Double): SVGPath {
+        return SVGPath(this.commands.map {
+            it.scale(scaleBy)
+        }.toList())
+    }
 }
 
 interface SVGCommand {
     fun startPos(): Pair<Double, Double>
+    fun scale(scaleBy: Double): SVGCommand
 }
 
 data class Move(val x: Double, val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = Move(x * scaleBy, y * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return x to y
     }
 }
 
 data class RelativeMove(val x: Double, val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = RelativeMove(x * scaleBy, y * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return x to y
     }
 }
 
 data class Line(val x: Double, val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = Line(x * scaleBy, y * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return x to y
     }
 }
 
 data class RelativeLine(val x: Double, val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = RelativeLine(x * scaleBy, y * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return x to y
     }
 }
 
 data class HorizontalLine(val x: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = HorizontalLine(x * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return x to Double.MAX_VALUE
     }
 }
 
 data class RelativeHorizontalLine(val x: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = RelativeHorizontalLine(x * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return x to Double.MAX_VALUE
     }
 }
 
 data class VerticleLine(val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = VerticleLine(y * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return Double.MAX_VALUE to y
     }
 }
 
 data class RelativeVerticleLine(val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = RelativeVerticleLine(y * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return Double.MAX_VALUE to y
     }
 }
 
 class ClosePath: SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = ClosePath()
+
     override fun startPos(): Pair<Double, Double> {
         return Double.MAX_VALUE to Double.MAX_VALUE
     }
 }
 
 data class CubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double, val x2: Double, val y2: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = CubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy, x2 * scaleBy, y2 *scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return listOf(x0, x1, x2).min()!! to listOf(y0, y1, y2).min()!!
     }
 }
 
 data class RelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double, val x2: Double, val y2: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = RelativeCubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy, x2 * scaleBy, y2 *scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return listOf(x0, x1, x2).min()!! to listOf(y0, y1, y2).min()!!
     }
 }
 
 data class SmoothCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = SmoothCubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return listOf(x0, x1).min()!! to listOf(y0, y1).min()!!
     }
 }
 
 data class SmoothRelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = SmoothRelativeCubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return listOf(x0, x1).min()!! to listOf(y0, y1).min()!!
     }
 }
 
 data class QuadraticeBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = QuadraticeBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return listOf(x0, x1).min()!! to listOf(y0, y1).min()!!
     }
 }
 
 data class RelativeQuadraticeBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = RelativeQuadraticeBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return listOf(x0, x1).min()!! to listOf(y0, y1).min()!!
     }
 }
 
 data class SmoothQuadraticeBezierCurve(val x: Double, val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = SmoothQuadraticeBezierCurve(x * scaleBy, y * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return x to y
     }
 }
 
 data class SmoothRelativeQuadraticeBezierCurve(val x: Double, val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = SmoothRelativeQuadraticeBezierCurve(x * scaleBy, y * scaleBy)
+
     override fun startPos(): Pair<Double, Double> {
         return x to y
     }
@@ -140,6 +179,8 @@ data class SmoothRelativeQuadraticeBezierCurve(val x: Double, val y: Double): SV
 
 data class Arc(val rx: Double, val ry: Double, val xRotation: Double, val largeArcFlag: Double,
                val sweepFlag: Double, val x: Double, val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = TODO()
+
     override fun startPos(): Pair<Double, Double> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -147,6 +188,8 @@ data class Arc(val rx: Double, val ry: Double, val xRotation: Double, val largeA
 
 data class RelativeArc(val rx: Double, val ry: Double, val xRotation: Double, val largeArcFlag: Double,
                        val sweepFlag: Double, val x: Double, val y: Double): SVGCommand {
+    override fun scale(scaleBy: Double): SVGCommand = TODO()
+
     override fun startPos(): Pair<Double, Double> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
