@@ -12,21 +12,21 @@ class SvgPathSpec : StringSpec({
 
     "read move to" {
         val result = parser.parse("M 0.0, 1.0")
-        result.first() shouldBe Move(0.0, 1.0)
-        result.size shouldBe 1
+        result.commands.first() shouldBe Move(0.0, 1.0)
+        result.commands.size shouldBe 1
     }
 
     "read rel move to" {
         val result = parser.parse("m 2.0,1.0 ")
-        result.first() shouldBe RelativeMove(2.0, 1.0)
-        result.size shouldBe 1
+        result.commands.first() shouldBe RelativeMove(2.0, 1.0)
+        result.commands.size shouldBe 1
     }
 
     "test repeating command" {
         val result = parser.parse("m 2.0,1.0 L 0.1 2.0 4.0,6.6")
-        result[0] shouldBe RelativeMove(2.0, 1.0)
-        result[1] shouldBe Line(0.1, 2.0)
-        result[2] shouldBe Line(4.0, 6.6)
-        result.size shouldBe 3
+        result.commands[0] shouldBe RelativeMove(2.0, 1.0)
+        result.commands[1] shouldBe Line(0.1, 2.0)
+        result.commands[2] shouldBe Line(4.0, 6.6)
+        result.commands.size shouldBe 3
     }
 })

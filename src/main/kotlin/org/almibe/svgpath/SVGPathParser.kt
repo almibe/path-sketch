@@ -31,7 +31,7 @@ class SVGPathParser {
     private val doubleChars = "0123456789.".toCharArray()
     private val ignoreChars = " ,\n\t".toCharArray()
 
-    fun parse(path: String): List<SVGCommand> {
+    fun parse(path: String): SVGPath {
         val itr = path.toCharArray().iterator()
         val commands = mutableListOf<SVGCommand>()
         var lastCommand = ' '
@@ -54,7 +54,7 @@ class SVGPathParser {
                 commands.add(nextCommand)
             }
         }
-        return commands
+        return SVGPath(commands)
     }
 
     private fun readCommand(commandChar: Char, itr: CharIterator): SVGCommand {
