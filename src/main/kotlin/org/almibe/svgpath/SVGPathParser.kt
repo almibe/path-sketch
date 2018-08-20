@@ -28,6 +28,7 @@ class SVGPathParser {
             'a' to 7
     )
     private val numberChars = "0123456789".toCharArray()
+    private val doubleChars = "0123456789.".toCharArray()
     private val ignoreChars = " ,\n\t".toCharArray()
 
     fun parse(path: String): List<SVGCommand> {
@@ -77,10 +78,43 @@ class SVGPathParser {
     }
 
     private fun readNumber(itr: CharIterator, firstChar: Char?): Double {
-        TODO()
+        val sb = StringBuilder()
+        if (firstChar != null) {
+            sb.append(firstChar)
+        }
+        readNumbers@ while (itr.hasNext()) {
+            val next = itr.next()
+            when (next) {
+                in doubleChars -> sb.append(next)
+                else -> break@readNumbers
+            }
+        }
+        return sb.toString().toDouble()
     }
 
     private fun createCommand(commandChar: Char, args: List<Double>): SVGCommand {
-        TODO()
+        return when (commandChar) {
+            'M' -> Move(args[0], args[1])
+            'm' -> RelativeMove(args[0], args[1])
+            'L' -> Line(args[0], args[1])
+            'l' -> RelativeLine(args[0], args[1])
+            'H' -> HorizontalLine(args[0])
+            'h' -> RelativeHorizontalLine(args[0])
+            'V' -> VerticleLine(args[0])
+            'v' -> RelativeVerticleLine(args[0])
+            'Z' -> ClosePath()
+            'z' -> ClosePath()
+            'C' -> CubicBezierCurve(args[0], args[1], args[2], args[3], args[4], args[5])
+            'c' -> RelativeCubicBezierCurve(args[0], args[1], args[2], args[3], args[4], args[5])
+            'Q' -> QuadraticeBezierCurve(args[0], args[1], args[2], args[3])
+            'q' -> RelativeQuadraticeBezierCurve(args[0], args[1], args[2], args[3])
+            'S' -> SmoothCubicBezierCurve(args[0], args[1],args[2], args[3])
+            's' -> SmoothRelativeCubicBezierCurve(args[0], args[1], args[2], args[3])
+            'T' -> SmoothQuadraticeBezierCurve(args[0], args[1])
+            't' -> SmoothRelativeQuadraticeBezierCurve(args[0], args[1])
+            'A' -> Arc(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
+            'a' -> RelativeArc(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
+            else -> throw RuntimeException("Unexpected command char - $commandChar")
+        }
     }
 }
