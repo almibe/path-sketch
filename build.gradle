@@ -18,6 +18,7 @@ test {
 
 dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib:1.2.60'
+    compile 'org.codehaus.groovy:groovy:2.5.2'
     testCompile 'io.kotlintest:kotlintest-runner-junit5:3.1.7'
 }
 
