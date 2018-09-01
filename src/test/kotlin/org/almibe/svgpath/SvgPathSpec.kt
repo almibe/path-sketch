@@ -23,10 +23,10 @@ class SvgPathSpec : StringSpec({
     }
 
     "test repeating command" {
-        val result = parser.parse("m 2.0,1.0 L 0.1 2.0 4.0,6.6")
+        val result = parser.parse("m 2.0,1.0 L 0.1 2.0 4.0,6.6 z")
         result.commands[0] shouldBe RelativeMove(2.0, 1.0)
         result.commands[1] shouldBe Line(0.1, 2.0)
         result.commands[2] shouldBe Line(4.0, 6.6)
-        result.commands.size shouldBe 3
+        result.commands.size shouldBe 4
     }
 })
