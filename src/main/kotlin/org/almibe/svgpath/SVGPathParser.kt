@@ -61,7 +61,8 @@ class SVGPathParser {
         val numberOfArgs = commandChars[commandChar]!!
         val args = mutableListOf<Double>()
         for (i in 1..numberOfArgs) {
-            args.add(readNumber(itr, null))
+            val number = readNumber(itr, null) ?: throw RuntimeException("Error reading $commandChar $i")
+            args.add(number)
         }
         return createCommand(commandChar, args)
     }
@@ -69,15 +70,16 @@ class SVGPathParser {
     private fun readRepeatedCommand(commandChar: Char, currentChar: Char, itr: CharIterator): SVGCommand {
         val numberOfArgs = commandChars[commandChar]!!
         val args = mutableListOf<Double>()
-        val firstArg = readNumber(itr, currentChar)
+        val firstArg = readNumber(itr, currentChar) ?: throw RuntimeException("Error reading $commandChar 1")
         args.add(firstArg)
         for (i in 2..numberOfArgs) {
-            args.add(readNumber(itr, null))
+            val number = readNumber(itr, null) ?: throw RuntimeException("Error reading $commandChar $i")
+            args.add(number)
         }
         return createCommand(commandChar, args)
     }
 
-    private fun readNumber(itr: CharIterator, firstChar: Char?): Double {
+    private fun readNumber(itr: CharIterator, firstChar: Char?): Double? {
         val sb = StringBuilder()
         if (firstChar != null) {
             sb.append(firstChar)
@@ -94,7 +96,7 @@ class SVGPathParser {
                 else -> break@readNumbers
             }
         }
-        return sb.toString().toDouble()
+        return sb.toString().toDoubleOrNull()
     }
 
     private fun createCommand(commandChar: Char, args: List<Double>): SVGCommand {
