@@ -48,7 +48,7 @@ class App : Application() {
 
     private fun setupGroovy() {
         scriptData.setVariable("canvas", canvas)
-        scriptData.setVariable("sketch", SVGController(canvas))
+        scriptData.setVariable("sketch", Sketch(canvas))
 
         pane.onKeyPressed = EventHandler {
             if (it.code == KeyCode.R && it.isControlDown) {

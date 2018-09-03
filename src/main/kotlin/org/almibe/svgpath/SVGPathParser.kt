@@ -27,8 +27,8 @@ class SVGPathParser {
             'A' to 7,
             'a' to 7
     )
-    private val numberChars = "0123456789".toCharArray()
-    private val doubleChars = "0123456789.".toCharArray()
+    private val numberChars = "-0123456789".toCharArray()
+    private val doubleChars = "-0123456789.".toCharArray()
     private val ignoreChars = " ,\n\t".toCharArray()
 
     fun parse(path: String): SVGPath {
