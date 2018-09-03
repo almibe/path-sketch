@@ -4,6 +4,8 @@
 
 package org.almibe.svgpath
 
+import javafx.scene.canvas.GraphicsContext
+
 class SVGPath(val commands: List<SVGCommand>) {
     fun computeStart(): Pair<Double, Double> {
         val itr = commands.iterator()
@@ -48,6 +50,12 @@ class SVGPath(val commands: List<SVGCommand>) {
         }
         return sb.toString().trim()
     }
+
+    fun draw(gc: GraphicsContext) {
+        this.commands.forEach {
+            it.draw(gc)
+        }
+    }
 }
 
 data class PathDimensions(val x0: Double, val y0: Double, val x1: Double, val y1: Double)
@@ -57,6 +65,7 @@ interface SVGCommand {
     fun translate(right: Double, down: Double): SVGCommand
     fun scale(scaleBy: Double): SVGCommand
     fun toPathString(): String
+    fun draw(gc: GraphicsContext)
 }
 
 data class Move(val x: Double, val y: Double): SVGCommand {
@@ -64,6 +73,7 @@ data class Move(val x: Double, val y: Double): SVGCommand {
     override fun translate(right: Double, down: Double): SVGCommand = Move(x + right, y + down)
     override fun scale(scaleBy: Double): SVGCommand = Move(x * scaleBy, y * scaleBy)
     override fun pathDimensions() = PathDimensions(x, y, x, y)
+    override fun draw(gc: GraphicsContext) = gc.lineTo(x, y)
 }
 
 data class RelativeMove(val x: Double, val y: Double): SVGCommand {
@@ -71,6 +81,7 @@ data class RelativeMove(val x: Double, val y: Double): SVGCommand {
     override fun translate(right: Double, down: Double): SVGCommand = RelativeMove(x + right, y + down)
     override fun scale(scaleBy: Double): SVGCommand = RelativeMove(x * scaleBy, y * scaleBy)
     override fun pathDimensions() = PathDimensions(x, y, x, y)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class Line(val x: Double, val y: Double): SVGCommand {
@@ -78,6 +89,7 @@ data class Line(val x: Double, val y: Double): SVGCommand {
     override fun translate(right: Double, down: Double): SVGCommand = Line(x + right, y + down)
     override fun scale(scaleBy: Double): SVGCommand = Line(x * scaleBy, y * scaleBy)
     override fun pathDimensions() = PathDimensions(x, y, x, y)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class RelativeLine(val x: Double, val y: Double): SVGCommand {
@@ -85,6 +97,7 @@ data class RelativeLine(val x: Double, val y: Double): SVGCommand {
     override fun translate(right: Double, down: Double): SVGCommand = RelativeLine(x + right, y + down)
     override fun scale(scaleBy: Double): SVGCommand = RelativeLine(x * scaleBy, y * scaleBy)
     override fun pathDimensions() = PathDimensions(x, y, x, y)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class HorizontalLine(val x: Double): SVGCommand {
@@ -92,6 +105,7 @@ data class HorizontalLine(val x: Double): SVGCommand {
     override fun translate(right: Double, down: Double): SVGCommand = HorizontalLine(x + right)
     override fun scale(scaleBy: Double): SVGCommand = HorizontalLine(x * scaleBy)
     override fun pathDimensions() = PathDimensions(x, Double.MAX_VALUE, x, Double.MIN_VALUE)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class RelativeHorizontalLine(val x: Double): SVGCommand {
@@ -99,20 +113,23 @@ data class RelativeHorizontalLine(val x: Double): SVGCommand {
     override fun translate(right: Double, down: Double): SVGCommand = RelativeHorizontalLine(x + right)
     override fun scale(scaleBy: Double): SVGCommand = RelativeHorizontalLine(x * scaleBy)
     override fun pathDimensions() = PathDimensions(x, Double.MAX_VALUE, x, Double.MIN_VALUE)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
-data class VerticleLine(val y: Double): SVGCommand {
+data class VerticalLine(val y: Double): SVGCommand {
     override fun toPathString(): String = "V $y"
-    override fun translate(right: Double, down: Double): SVGCommand = VerticleLine(y + down)
-    override fun scale(scaleBy: Double): SVGCommand = VerticleLine(y * scaleBy)
+    override fun translate(right: Double, down: Double): SVGCommand = VerticalLine(y + down)
+    override fun scale(scaleBy: Double): SVGCommand = VerticalLine(y * scaleBy)
     override fun pathDimensions() = PathDimensions(Double.MAX_VALUE, y, Double.MIN_VALUE, y)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
-data class RelativeVerticleLine(val y: Double): SVGCommand {
+data class RelativeVerticalLine(val y: Double): SVGCommand {
     override fun toPathString(): String = "v $y"
-    override fun translate(right: Double, down: Double): SVGCommand = RelativeVerticleLine(y + down)
-    override fun scale(scaleBy: Double): SVGCommand = RelativeVerticleLine(y * scaleBy)
+    override fun translate(right: Double, down: Double): SVGCommand = RelativeVerticalLine(y + down)
+    override fun scale(scaleBy: Double): SVGCommand = RelativeVerticalLine(y * scaleBy)
     override fun pathDimensions() = PathDimensions(Double.MAX_VALUE, y, Double.MIN_VALUE, y)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 class ClosePath: SVGCommand {
@@ -120,6 +137,7 @@ class ClosePath: SVGCommand {
     override fun translate(right: Double, down: Double): SVGCommand = ClosePath()
     override fun scale(scaleBy: Double): SVGCommand = ClosePath()
     override fun pathDimensions() = PathDimensions(Double.MAX_VALUE, Double.MAX_VALUE, Double.MIN_VALUE, Double.MIN_VALUE)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class CubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double, val x2: Double, val y2: Double): SVGCommand {
@@ -128,6 +146,7 @@ data class CubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val 
     override fun scale(scaleBy: Double): SVGCommand = CubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy, x2 * scaleBy, y2 * scaleBy)
     override fun pathDimensions() = PathDimensions(listOf(x0, x1, x2).min()!!,listOf(y0, y1, y2).min()!!,
                 listOf(x0, x1, x2).max()!!,listOf(y0, y1, y2).max()!!)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class RelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double, val x2: Double, val y2: Double): SVGCommand {
@@ -136,6 +155,7 @@ data class RelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1: Doub
     override fun scale(scaleBy: Double): SVGCommand = RelativeCubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy, x2 * scaleBy, y2 * scaleBy)
     override fun pathDimensions() = PathDimensions(listOf(x0, x1, x2).min()!!,listOf(y0, y1, y2).min()!!,
             listOf(x0, x1, x2).max()!!,listOf(y0, y1, y2).max()!!)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class SmoothCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
@@ -144,6 +164,7 @@ data class SmoothCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double
     override fun scale(scaleBy: Double): SVGCommand = SmoothCubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
     override fun pathDimensions() = PathDimensions(listOf(x0, x1).min()!!,listOf(y0, y1).min()!!,
             listOf(x0, x1).max()!!,listOf(y0, y1).max()!!)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class SmoothRelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
@@ -152,36 +173,41 @@ data class SmoothRelativeCubicBezierCurve(val x0: Double, val y0: Double, val x1
     override fun scale(scaleBy: Double): SVGCommand = SmoothRelativeCubicBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
     override fun pathDimensions() = PathDimensions(listOf(x0, x1).min()!!,listOf(y0, y1).min()!!,
             listOf(x0, x1).max()!!,listOf(y0, y1).max()!!)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
-data class QuadraticeBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+data class QuadraticBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
     override fun toPathString(): String = "Q $x0 $y0 $x1 $y1"
-    override fun translate(right: Double, down: Double): SVGCommand = QuadraticeBezierCurve(x0 + right, y0 + down, x1 + right, y1 + down)
-    override fun scale(scaleBy: Double): SVGCommand = QuadraticeBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
+    override fun translate(right: Double, down: Double): SVGCommand = QuadraticBezierCurve(x0 + right, y0 + down, x1 + right, y1 + down)
+    override fun scale(scaleBy: Double): SVGCommand = QuadraticBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
     override fun pathDimensions() = PathDimensions(listOf(x0, x1).min()!!,listOf(y0, y1).min()!!,
             listOf(x0, x1).max()!!,listOf(y0, y1).max()!!)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
-data class RelativeQuadraticeBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
+data class RelativeQuadraticBezierCurve(val x0: Double, val y0: Double, val x1: Double, val y1: Double): SVGCommand {
     override fun toPathString(): String = "q $x0 $y0 $x1 $y1"
-    override fun translate(right: Double, down: Double): SVGCommand = RelativeQuadraticeBezierCurve(x0 + right, y0 + down, x1 + right, y1 + down)
-    override fun scale(scaleBy: Double): SVGCommand = RelativeQuadraticeBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
+    override fun translate(right: Double, down: Double): SVGCommand = RelativeQuadraticBezierCurve(x0 + right, y0 + down, x1 + right, y1 + down)
+    override fun scale(scaleBy: Double): SVGCommand = RelativeQuadraticBezierCurve(x0 * scaleBy, y0 * scaleBy, x1 * scaleBy, y1 * scaleBy)
     override fun pathDimensions() = PathDimensions(listOf(x0, x1).min()!!,listOf(y0, y1).min()!!,
             listOf(x0, x1).max()!!,listOf(y0, y1).max()!!)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
-data class SmoothQuadraticeBezierCurve(val x: Double, val y: Double): SVGCommand {
+data class SmoothQuadraticBezierCurve(val x: Double, val y: Double): SVGCommand {
     override fun toPathString(): String = "T $x $y"
-    override fun translate(right: Double, down: Double): SVGCommand = SmoothQuadraticeBezierCurve(x + right, y + down)
-    override fun scale(scaleBy: Double): SVGCommand = SmoothQuadraticeBezierCurve(x * scaleBy, y * scaleBy)
+    override fun translate(right: Double, down: Double): SVGCommand = SmoothQuadraticBezierCurve(x + right, y + down)
+    override fun scale(scaleBy: Double): SVGCommand = SmoothQuadraticBezierCurve(x * scaleBy, y * scaleBy)
     override fun pathDimensions() = PathDimensions(x, y, x, y)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
-data class SmoothRelativeQuadraticeBezierCurve(val x: Double, val y: Double): SVGCommand {
+data class SmoothRelativeQuadraticBezierCurve(val x: Double, val y: Double): SVGCommand {
     override fun toPathString(): String = "t $x $y"
-    override fun translate(right: Double, down: Double): SVGCommand = SmoothRelativeQuadraticeBezierCurve(x + right, y + down)
-    override fun scale(scaleBy: Double): SVGCommand = SmoothRelativeQuadraticeBezierCurve(x * scaleBy, y * scaleBy)
+    override fun translate(right: Double, down: Double): SVGCommand = SmoothRelativeQuadraticBezierCurve(x + right, y + down)
+    override fun scale(scaleBy: Double): SVGCommand = SmoothRelativeQuadraticBezierCurve(x * scaleBy, y * scaleBy)
     override fun pathDimensions() = PathDimensions(x, y, x, y)
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class Arc(val rx: Double, val ry: Double, val xRotation: Double, val largeArcFlag: Double,
@@ -190,6 +216,7 @@ data class Arc(val rx: Double, val ry: Double, val xRotation: Double, val largeA
     override fun translate(right: Double, down: Double): SVGCommand = TODO()
     override fun scale(scaleBy: Double): SVGCommand = TODO()
     override fun pathDimensions() = TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun draw(gc: GraphicsContext) = TODO()
 }
 
 data class RelativeArc(val rx: Double, val ry: Double, val xRotation: Double, val largeArcFlag: Double,
@@ -198,4 +225,5 @@ data class RelativeArc(val rx: Double, val ry: Double, val xRotation: Double, va
     override fun translate(right: Double, down: Double): SVGCommand = TODO()
     override fun scale(scaleBy: Double): SVGCommand = TODO()
     override fun pathDimensions() = TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun draw(gc: GraphicsContext) = TODO()
 }
